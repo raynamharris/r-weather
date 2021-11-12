@@ -16,16 +16,11 @@ knitr::opts_chunk$set(echo = T, message = T,
 library(tidyverse)
 library(lubridate)
 library(cowplot)
-library(magick)
 library(viridis)
 library(scales)
 library(ggridges)
 
-noaa <- image_read("../images/noaa.png")
-photo_file <- image_read( "../images/photo-tahoe.png")
-
 ```
-
 
 
 ```{r weather-ggridges, fig.width=6, fig.height=3.3}
@@ -112,14 +107,6 @@ jpeg(file="../images/weather-ggridges-3.jpg", width=1600, height=1200, res = 300
 p3
 dev.off()
 
-p4 <- ggdraw() + 
-  draw_image(photo_file, scale = 0.25, x = -0.365, y =  0.3 ) +
-  draw_plot(p3)
-p4
-
-jpeg(file="../images/weather-ggridges-4.jpg", width=1600, height=1200, res = 300)
-p4
-dev.off()
 
 ```
 

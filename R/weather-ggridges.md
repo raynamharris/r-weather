@@ -35,12 +35,6 @@
     ## 
     ##     stamp
 
-    library(magick)
-
-    ## Linking to ImageMagick 6.9.12.3
-    ## Enabled features: cairo, fontconfig, freetype, heic, lcms, pango, raw, rsvg, webp
-    ## Disabled features: fftw, ghostscript, x11
-
     library(viridis)
 
     ## Loading required package: viridisLite
@@ -63,9 +57,6 @@
     ##     col_factor
 
     library(ggridges)
-
-    noaa <- image_read("../images/noaa.png")
-    photo_file <- image_read( "../images/photo-tahoe.png")
 
     nov11 <- read_csv("../data/weather-2021-11-11.csv") %>%
       select(STATION, NAME, DATE, SNWD) %>%
@@ -205,20 +196,6 @@
 
     jpeg(file="../images/weather-ggridges-3.jpg", width=1600, height=1200, res = 300)
     p3
-    dev.off()
-
-    ## quartz_off_screen 
-    ##                 2
-
-    p4 <- ggdraw() + 
-      draw_image(photo_file, scale = 0.25, x = -0.365, y =  0.3 ) +
-      draw_plot(p3)
-    p4
-
-![](../images/weather-ggridges-4.png)
-
-    jpeg(file="../images/weather-ggridges-4.jpg", width=1600, height=1200, res = 300)
-    p4
     dev.off()
 
     ## quartz_off_screen 

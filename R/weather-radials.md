@@ -33,12 +33,6 @@
     ## 
     ##     stamp
 
-    library(magick)
-
-    ## Linking to ImageMagick 6.9.12.3
-    ## Enabled features: cairo, fontconfig, freetype, heic, lcms, pango, raw, rsvg, webp
-    ## Disabled features: fftw, ghostscript, x11
-
     library(viridis)
 
     ## Loading required package: viridisLite
@@ -61,9 +55,6 @@
     ##     col_factor
 
     library(ggridges)
-
-    noaa <- image_read("../images/noaa.png")
-    photo_file <- image_read( "../images/photo-tahoe.png")
 
 ## Weather Radials, Austin Versus Squaw ~ March 2021
 

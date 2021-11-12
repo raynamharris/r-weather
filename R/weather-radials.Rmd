@@ -14,14 +14,9 @@ knitr::opts_chunk$set(echo = T, message = T,
 library(tidyverse)
 library(lubridate)
 library(cowplot)
-library(magick)
 library(viridis)
 library(scales)
 library(ggridges)
-
-noaa <- image_read("../images/noaa.png")
-photo_file <- image_read( "../images/photo-tahoe.png")
-
 ```
 
 ## Weather Radials, Austin Versus Squaw ~ March 2021
