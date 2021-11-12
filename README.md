@@ -4,8 +4,6 @@
 
 RStudio: [![Binder](http://mybinder.org/badge_logo.svg)](http://mybinder.org/v2/gh/raynamharris/r-weather/master?urlpath=rstudio)
 
-//mybinder.org/v2/gh/binder-examples/r/master?urlpath=shiny/bus-dashboard/)
-
 Binder supports using R and RStudio, with libraries pinned to a specific 
 snapshot on [MRAN](https://mran.microsoft.com/documents/rro/reproducibility).
 
