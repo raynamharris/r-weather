@@ -17,6 +17,5 @@ All images used or created by the script are stored in the **images** subdirecto
 
 ![](images/weather-radials-1.png)
 
-## [ggridges](https://github.com/raynamharris/r-weather/blob/master/R/weather.md)
--ggridges
+## [ggridges](https://github.com/raynamharris/r-weather/blob/master/R/weather-ggridges.md)
 ![](images/weather-ggridges-4.png)
