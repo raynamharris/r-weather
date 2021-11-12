@@ -185,11 +185,11 @@
             axis.text.x = element_text(angle = 45, 
                                          hjust = 1)) +
       scale_x_date(breaks = date_breaks("month"), 
-                   labels = date_format("%b %d")) +
+                   labels = date_format("%b %d %Y")) +
       labs(subtitle = "Snow Depth around Lake Tahoe, Oct 2020 - Nov 2021",
            y = NULL,
            caption = "Daily summaries collected from https://www.ncdc.noaa.gov/cdo-web/search",
-          x = "2020                                                         2021            ") 
+          x =  NULL) 
     p3
 
 ![](../images/weather-ggridges-3.png)
