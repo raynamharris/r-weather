@@ -1,7 +1,9 @@
-# Specifying an R environment with a runtime.txt file
+# R-weather
 
 
 RStudio: [![Binder](http://mybinder.org/badge_logo.svg)](http://mybinder.org/v2/gh/raynamharris/r-weather/master?urlpath=rstudio)
+
+## About
 
 This repo was made from an [R-Binder template](https://github.com/binder-examples/r).
  
@@ -11,6 +13,10 @@ The R scripts are stored in the **R** directory. An R project was created so tha
 
 All images used or created by the script are stored in the **images** subdirectory.  Here are a few of my favorites.
 
-![](images/weather-austinsquaw-1.png)
+## [radials](https://github.com/raynamharris/r-weather/blob/master/R/weather-radials.md) 
 
-![](images/weather-nov-11-4.png)
+![](images/weather-radials-1.png)
+
+## [ggridges](https://github.com/raynamharris/r-weather/blob/master/R/weather.md)
+-ggridges
+![](images/weather-ggridges-4.png)

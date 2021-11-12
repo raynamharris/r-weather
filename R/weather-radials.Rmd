@@ -1,0 +1,101 @@
+---
+title: "weather"
+author: "Rayna M Harris"
+date: "11/12/2021"
+output: md_document
+---
+
+```{r setup, echo = T, message = T, results = T, warning = T}
+
+knitr::opts_chunk$set(echo = T, message = T, 
+                      results = T, warning = T,
+                      fig.path = '../images/')
+
+library(tidyverse)
+library(lubridate)
+library(cowplot)
+library(magick)
+library(viridis)
+library(scales)
+library(ggridges)
+
+noaa <- image_read("../images/noaa.png")
+photo_file <- image_read( "../images/photo-tahoe.png")
+
+```
+
+## Weather Radials, Austin Versus Squaw ~ March 2021
+
+```{r weather-radials}
+
+weather <- read_csv("../data/weather.csv") %>%
+  mutate(date = DATE) %>% 
+  select(date, NAME, TAVG, TMAX, TMIN) %>%
+  mutate(city = "Squaw Valley, CA")
+head(weather)
+
+weather4 <- read_csv("../data/weather4.csv") %>%
+  mutate(date = DATE) %>% 
+  select(date, NAME, TAVG, TMAX, TMIN) %>%
+  mutate(city = "Austin, TX")
+head(weather4)
+ 
+weather <- rbind(weather, weather4) %>%
+    filter(date <= as.Date("2020-12-31"))
+
+ggplot(weather, aes(date, ymin = TMIN, ymax = TMAX, color = TMAX)) +
+  geom_linerange(size = 1, alpha = 0.75) +
+  scale_color_viridis(discrete = F, limits = c(1,110)) +
+  scale_x_date(labels = date_format("%b"), breaks = date_breaks("month")) +
+  ylim(0, 110) +
+  labs(
+    title = "2020 Weather Radials",
+    x = NULL,
+    y = NULL,
+    color = expression(paste("Max\ntemp (",degree,"F)")) ,
+    caption = "Data from NOAA www.ncdc.noaa.gov/cdo-web/datasets"
+  ) +
+  coord_polar(start = 3.14) +
+  theme_cowplot() +
+  theme(legend.position = "right",
+        axis.ticks.y = element_blank()) +
+  facet_wrap(~city)
+
+
+dtf <- read_csv("../data/weather-2021-10-21.csv") %>%
+  select(STATION, NAME, DATE, TMIN, TMAX, TAVG) %>%
+  mutate(TMID = ((TMIN + TMAX)/2),
+         NAME = factor(NAME),
+         STATION = factor(STATION))  
+head(dtf)
+tail(dtf)
+summary(dtf)
+
+# rename levels
+levels(dtf$NAME) 
+levels(dtf$NAME) <- c("Fairbanks, AK", "Sacramento, CA", "Truckee, CA")
+
+ggplot(dtf, aes(x = DATE, ymin = TMIN, ymax = TMAX, color = TMID)) +
+  geom_linerange(size = 1, alpha = 0.75) +
+  scale_color_viridis(discrete = F, limits = c(-50,100)) +
+  scale_x_date(labels = date_format("%b"), breaks = date_breaks("month")) +
+  ylim(-50,100) +
+  labs(
+    title = "Weather Radials",
+    caption = "The lines connect the daily minimum and maximum temperatures and are colored by the mid temp.",
+    x = NULL,
+    y = NULL,
+    color = expression(paste("Mid\ntemp (",degree,"F)")) ,
+    subtitle = "Data from NOAA www.ncdc.noaa.gov/cdo-web/datasets"
+  ) +
+  coord_polar(start = 3.14) +
+  theme_cowplot() +
+  theme(legend.position = "right",
+       # axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank()) +
+  facet_wrap(~NAME)
+
+```
+
+
+

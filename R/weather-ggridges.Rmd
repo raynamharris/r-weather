@@ -1,0 +1,125 @@
+---
+title: "weather-ggridges"
+author: "Rayna M Harris"
+date: "11/1/2021"
+output: md_document
+---
+
+## Weather - ggridges
+
+```{r setup, echo = T, message = T, results = T, warning = T}
+
+knitr::opts_chunk$set(echo = T, message = T, 
+                      results = T, warning = T,
+                      fig.path = '../images/')
+
+library(tidyverse)
+library(lubridate)
+library(cowplot)
+library(magick)
+library(viridis)
+library(scales)
+library(ggridges)
+
+noaa <- image_read("../images/noaa.png")
+photo_file <- image_read( "../images/photo-tahoe.png")
+
+```
+
+
+
+```{r weather-ggridges, fig.width=6, fig.height=3.3}
+
+nov11 <- read_csv("../data/weather-2021-11-11.csv") %>%
+  select(STATION, NAME, DATE, SNWD) %>%
+  mutate(NAME = factor(NAME),
+         STATION = factor(STATION))   %>% 
+  mutate(DATE2 = DATE) %>%
+  separate(DATE2, c("YEAR", "MONTH", "DAY"))  
+summary(nov11)
+
+# rename levels
+levels(nov11$NAME) 
+levels(nov11$NAME) <- c("Heavenly, NV",  
+                        "Mt Rose, NV",  
+                        "Soda Springs, CA",
+                        "Squaw Valley, CA")
+levels(nov11$NAME) 
+
+skicolors <- c("#e53735",  "#11539f", "#fbd249",  "#231a49" )
+
+p <- nov11 %>% 
+  ggplot(aes(x = DATE, y = SNWD, color = NAME)) +
+    #geom_point(size = 0.1, alpha = 0.5) +
+    geom_line(alpha = 0.9) +
+    labs(x = NULL, y = "Snow depth (in)",
+         subtitle = "Snowfall around Lake Tahoe",
+         color = NULL) +
+    theme_bw() +
+    theme(#legend.position = "none",
+          axis.text.x = element_text(angle = 45, 
+                                     hjust = 1)) +
+  scale_color_manual(values = skicolors) +
+  scale_x_date(breaks = date_breaks("month")) + 
+  facet_grid(~YEAR, drop = T, 
+             scales = "free_x", space = "free_x") +
+  geom_hline(yintercept = 38)
+p
+
+jpeg(file="../images/weather-ggridges-1.jpg", width=1600, height=800, res = 300)
+p
+dev.off()
+
+p2 <- nov11 %>% 
+  ggplot(aes(x = DATE, y = SNWD, color = NAME)) +
+    #geom_point(size = 0.1, alpha = 0.5) +
+    geom_line(alpha = 0.9) +
+    labs(x = NULL, y = "Snow depth (in)",
+         subtitle = "Snowfall around Lake Tahoe",
+         color = NULL) +
+    theme_bw() +
+    theme(legend.position = "bottom",
+          axis.text.x = element_text(angle = 45, 
+                                     hjust = 1)) +
+  scale_color_manual(values = skicolors) +
+  scale_x_date(breaks = date_breaks("month"),
+               labels = date_format("%b %d")) + 
+  facet_grid(~YEAR, drop = T, 
+             scales = "free_x", space = "free_x") 
+p2
+
+jpeg(file="../images/weather-ggridges-2.jpg", width=1650, height=1650, res = 300)
+p2
+dev.off()
+
+p3 <- ggplot(nov11, aes(x = DATE, y = NAME, 
+                        height = SNWD, fill = NAME)) +
+  geom_density_ridges(stat = "identity", alpha = 0.75, scale = 4) +
+  scale_fill_manual(values = skicolors) +
+  theme_cowplot() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, 
+                                     hjust = 1)) +
+  scale_x_date(breaks = date_breaks("month"), 
+               labels = date_format("%b %d")) +
+  labs(subtitle = "Snow Depth around Lake Tahoe, Oct 2020 - Nov 2021",
+       y = NULL,
+       caption = "Daily summaries collected from https://www.ncdc.noaa.gov/cdo-web/search",
+      x = "2020                                                         2021            ") 
+p3
+
+jpeg(file="../images/weather-ggridges-3.jpg", width=1600, height=1200, res = 300)
+p3
+dev.off()
+
+p4 <- ggdraw() + 
+  draw_image(photo_file, scale = 0.25, x = -0.365, y =  0.3 ) +
+  draw_plot(p3)
+p4
+
+jpeg(file="../images/weather-ggridges-4.jpg", width=1600, height=1200, res = 300)
+p4
+dev.off()
+
+```
+
