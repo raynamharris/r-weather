@@ -1,0 +1,197 @@
+---
+title: "averages"
+author: "Rayna M Harris"
+date: "4/25/2022"
+output: md_document
+---
+
+```{r setup}
+library(tidyverse)
+library(cowplot)
+library(magick)
+library(lubridate)
+library(scales)
+```
+
+```{r, eval=F}
+
+CITY = "Olympic Valley, CA"
+
+weather <- read_csv("../data/weather-2022-04-25.csv") %>% 
+  mutate(CITY = CITY) %>%
+  mutate(MONTH = month(DATE),
+         DAY = day(DATE),
+         YEAR = year(DATE)) %>%
+  select(DATE, MONTH:YEAR, CITY,  PRCP, SNWD)  %>%
+  arrange(desc(DATE))  %>%
+  mutate(PRE = lag(SNWD, default = NA),
+         DIFF = PRE - SNWD ) 
+
+head(weather)
+
+```
+
+
+```{r eval=F}
+
+weather %>%
+  filter(YEAR > 2002,
+         MONTH %in% c(3,4)) %>%
+  ggplot(aes(x = DATE, y = PRCP, color = as.factor(YEAR))) +
+  geom_point() +
+  theme(legend.position = "none")
+
+
+weather %>%
+  filter(YEAR %in% c(2020,2021,2022)) %>%
+  ggplot(aes(x = DATE, y = SNWD, color = SNWD)) +
+  geom_point() 
+
+
+weather %>%
+  group_by(YEAR, MONTH) %>%
+  summarize(PRCP_A = mean(PRCP)) %>%
+  drop_na() %>%
+  filter(MONTH == 4) %>%
+  ggplot(aes(x = YEAR, y = PRCP_A, fill = PRCP_A)) +
+  geom_bar(stat = "identity") +
+  labs(subtitle = "Average snowfall in April", 
+       y = "Precitation, units?") 
+
+weather %>%
+  group_by(YEAR, MONTH) %>%
+  summarize(SNWD_M = max(SNWD)) %>%
+  drop_na() %>%
+  filter(MONTH == 4) %>%
+  ggplot(aes(x = YEAR, y = SNWD_M, fill = SNWD_M)) +
+  geom_bar(stat = "identity") +
+  labs(subtitle = "Average snowfall in April", 
+       y = "Precitation, units?") 
+
+
+
+
+weather %>%
+  select(-PRCP) %>%
+  filter(DATE != "2022-04-12",
+         YEAR > 2002,
+         MONTH %in% c(3,4)) %>%
+  ggplot(aes(x = DATE, y = DIFF, color = as.factor(MONTH))) +
+  geom_line() +
+  labs(subtitle = "Daily snowfall", 
+       y = "Snowfall, in?")  + 
+  facet_wrap(~YEAR, scales = "free_x", nrow = 1) +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom") +
+  scale_x_date(breaks = "month", date_labels = "%m")
+
+
+
+
+
+
+```
+```{r weather-palisades, fig.path="../images/", fig.height=6, fig.width =6}
+palisades <- read.csv("../data/2021_2022_snowfall.csv")  %>%
+  mutate(Date = as.Date(As.of.6am,format='%A, %B %d' )) %>%
+  separate(As.of.6am, into = c("DayofWeek", "Date2"), sep = ", ") %>%
+  separate(Date2, into = c("Month", "Day")) %>%
+  select(Date, everything())  %>%
+  mutate(Date = as.character(Date)) %>%
+  mutate(Date = ifelse(grepl("October|November|December", Month), gsub("2022", "2021", Date), Date)) %>%
+  mutate(Month = factor(Month, levels = c("October", "November", "December",
+                                          "January", "February", "March", "April"))) %>%
+  mutate(Date = as.Date(Date)) 
+
+
+hourly <- palisades$Palisades.Tahoe.8000..24.hour
+cumulative <- palisades$Palisades.Tahoe.8000..Cumulative
+
+a <- ggplot(palisades, aes(x = Date, y = hourly, label = hourly, fill = Month)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        legend.position = "none") +
+  scale_x_date(breaks = "month", date_labels = "%b %Y") +
+  labs(title = "2021 - 2022",
+    subtitle = "Palisades Tahoe, 8000 ft, 6 am",
+       y = " ", x  = NULL) +
+  scale_y_continuous( labels = label_number(accuracy = 0.1), limits = c(0,31.0)) 
+
+
+
+b <- ggplot(palisades, aes(x = Date, y = cumulative, label = cumulative, color = Month)) +
+  geom_line(color = "grey") +
+  geom_point() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                axis.text.y = element_blank()) +
+  theme(legend.position =  "none") +
+  scale_x_date(breaks = "month", date_labels = "%b %Y")  +
+  labs(subtitle = " ",
+       y = " ")   +
+  ylim(0,400)
+ 
+
+ab <- plot_grid(a,b , ncol = 1, rel_heights = c(0.45,0.55))
+
+
+##
+
+
+
+palisades2020 <- read.csv("../data/2020_2021_snowfall.csv")  %>%
+  mutate(Date = as.Date(As.of.6am,format='%A, %B %d' )) %>%
+  separate(As.of.6am, into = c("DayofWeek", "Date2"), sep = ", ") %>%
+  separate(Date2, into = c("Month", "Day")) %>%
+  select(Date, everything())  %>%
+  mutate(Date = as.character(Date)) %>%
+  mutate(Date = ifelse(grepl("October|November|December", Month), gsub("2022", "2020", Date), gsub("2022", "2021", Date))) %>%
+  mutate(Month = factor(Month, levels = c("October", "November", "December",
+                                          "January", "February", "March", "April"))) %>%
+  mutate(Date = as.Date(Date)) 
+
+
+
+hourly <- palisades2020$X8.000..24.hour
+cumulative <- palisades2020$X8.000..Cumulative
+
+c <- ggplot(palisades2020, aes(x = Date, y = hourly, label = hourly, fill = Month)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +
+  theme(axis.text.x = element_blank(),
+        legend.position = "none") +
+  scale_x_date(breaks = "month", date_labels = "%b %Y") +
+  labs(title = "2020 - 2021",
+       subtitle = "Squaw Valley, 8000 ft, 6 am",
+       y = "Daily snowfall (in)", x  = NULL) +
+  scale_y_continuous(
+  labels = label_number(accuracy = 0.1)) +
+  scale_fill_manual(values = c("#C49A00", "#53B400" ,"#00C094", 
+                                "#00B6EB", "#A58AFF", "#FB61D7")) +
+ 
+  scale_y_continuous( labels = label_number(accuracy = 0.1), limits = c(0,31.0)) 
+
+
+
+d <- ggplot(palisades2020, aes(x = Date, y = cumulative, label = cumulative, color = Month)) +
+  geom_line(color = "grey") +
+  geom_point() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position =  "none") +
+  scale_x_date(breaks = "month", date_labels = "%b %Y")  +
+  labs(subtitle = " ",
+       y = "Cumulative snowfall (in)") +
+  scale_color_manual(values = c("#C49A00", "#53B400" ,"#00C094", 
+                                "#00B6EB", "#A58AFF", "#FB61D7")) +
+  ylim(0,400)
+
+
+cd <- plot_grid(c,d , ncol = 1, rel_heights = c(0.45,0.55))
+
+plot_grid(cd, ab)
+
+  
+```
